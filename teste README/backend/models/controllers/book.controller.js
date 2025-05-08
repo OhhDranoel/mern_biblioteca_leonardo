@@ -1,15 +1,7 @@
-import "dotenv/config";
-import express from "express";
 import mongoose from "mongoose";
+import { Book } from "../models/book.model.js";
 
-import { connectToDatabase } from "./config/db.js";
-import { Book } from "./models/book.model.js";
-
-const app = express();
-
-app.use(express.json());
-
-app.post("/api/v1/books", async (req, res) => {
+export const createBook = async (req, res) => {
   const { title, subtitle, author, genre, cover } = req.body;
 
   try {
@@ -20,28 +12,23 @@ app.post("/api/v1/books", async (req, res) => {
     console.error("Error saving book: ", error);
     res.status(500).json({ success: false, error: "Error saving book" });
   }
-});
+};
 
-app.listen(3000, () => {
-  console.log("Server is running on port 3000");
-  connectToDatabase();
-});
-
-app.get("/api/v1/books", async (req, res) => {
+export const getBooks = async (req, res) => {
   try {
     const books = await Book.find();
     res.status(200).json({ success: true, data: books });
   } catch (error) {
     console.error("Error fetching books: ", error);
-    res.status(500).json({ sucess: false, error: "Error fetching books" });
+    res.status(500).json({ success: false, error: "Error fetching books" });
   }
-});
+};
 
-app.get("/api/v1/books/:id", async (req, res) => {
+export const getBook = async (req, res) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ sucess: false, error: "Invalid ID" });
+    return res.status(400).json({ success: false, error: "Invalid ID" });
   }
 
   try {
@@ -51,19 +38,18 @@ app.get("/api/v1/books/:id", async (req, res) => {
       return res.status(404).json({ success: false, error: "Book not found" });
     }
 
-    res.status(200).json({ sucess: true, data: book });
+    res.status(200).json({ success: true, data: book });
   } catch (error) {
     console.error("Error fetching book: ", error);
     res.status(500).json({ success: false, error: "Error fetching book" });
   }
-});
-
-app.put("/api/v1/books/:id", async (req, res) => {
+};
+export const updateBook = async (req, res) => {
   const { id } = req.params;
   const { title, subtitle, author, genre, cover } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ sucess: false, error: "Invalid ID" });
+    return res.status(400).json({ success: false, error: "Invalid ID" });
   }
 
   try {
@@ -79,21 +65,17 @@ app.put("/api/v1/books/:id", async (req, res) => {
       { new: true }
     );
 
-    res.status(200).json({
-      success: true,
-      data: updatedBook,
-    });
+    res.status(200).json({ success: true, data: updatedBook });
   } catch (error) {
     console.error("Error updating book: ", error);
     res.status(500).json({ success: false, error: "Error updating book" });
   }
-});
-
-app.delete("/api/v1/books/:id", async (req, res) => {
+};
+export const deleteBook = async (req, res) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ sucess: false, error: "Invalid ID" });
+    return res.status(400).json({ success: false, error: "Invalid ID" });
   }
 
   try {
@@ -110,11 +92,4 @@ app.delete("/api/v1/books/:id", async (req, res) => {
     console.error("Error deleting book: ", error);
     res.status(500).json({ success: false, error: "Error deleting book" });
   }
-});
-app.listen(3000, () => {
-  console.log("Server is running on port 3000");
-  connectToDatabase();
-});
-
-//YedFN6mqaceqBVM9
-//esse caraaio  aí em cima é a senha do MongoDB
+};
